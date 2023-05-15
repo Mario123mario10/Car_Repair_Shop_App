@@ -11,6 +11,8 @@ users = [
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    error_flag = False
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -19,7 +21,8 @@ def login():
             return redirect(url_for('dashboard', role = role))  # Redirect to the appropriate dashboard based on the role
         else:
             error_message = 'Invalid credentials. Please try again.'
-            return render_template('login.html', error_message=error_message)
+            error_flag = True
+            return render_template('login.html', error = error_flag, error_message=error_message)
     return render_template('login.html')
 
 
@@ -66,6 +69,7 @@ def dashboard(role):
         return render_template('admin_dashboard.html')
     else:
         return render_template('client_dashboard.html')
+
 
 def authenticate_user(username, password, role):
     for user in users:

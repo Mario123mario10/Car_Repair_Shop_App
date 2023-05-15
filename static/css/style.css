@@ -26,11 +26,12 @@ form input[type="text"],
 form input[type="password"],
 form input[type="email"],
 form select {
-  width: 95%;
+  width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 15px;
+  box-sizing: border-box;
 }
 
 form button[type="submit"] {
