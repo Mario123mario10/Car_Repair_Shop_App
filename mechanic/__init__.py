@@ -1,0 +1,1 @@
+from .mechanic import mechanic_bp

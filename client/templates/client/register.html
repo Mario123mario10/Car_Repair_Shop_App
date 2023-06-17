@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <h2>Registration</h2>
+
+  <form action="{{ url_for('register') }}" method="post">
+    <div>
+      <label for="street">Street:</label>
+      <input type="text" id="street" name="street" required>
+    </div>
+    <div>
+      <label for="house_number">House Number:</label>
+      <input type="text" id="house_number" name="house_number" required>
+    </div>
+    <div>
+      <label for="apartment_number">Apartment Number:</label>
+      <input type="text" id="apartment_number" name="apartment_number">
+    </div>
+    <div>
+      <label for="zip_code">Zip Code:</label>
+      <input type="text" id="zip_code" name="zip_code" required>
+    </div>
+    <div>
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" required>
+    </div>
+    <div>
+      <label for="country">Country:</label>
+      <input type="text" id="country" name="country" required>
+    </div>
+    <div>
+      <label for="first_name">First Name:</label>
+      <input type="text" id="first_name" name="first_name" required>
+    </div>
+    <div>
+      <label for="last_name">Last Name:</label>
+      <input type="text" id="last_name" name="last_name" required>
+    </div>
+    <div>
+      <label for="phone_number">Phone Number:</label>
+      <input type="text" id="phone_number" name="phone_number" required>
+    </div>
+    <div>
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <input type="hidden" name="role" value="client">
+    <div>
+      <button type="submit" name="submit">Register</button>
+    </div>
+  </form>
+</body>
+</html>
