@@ -1,4 +1,3 @@
-from sqlalchemy import func
 from flask import Blueprint, render_template, request, redirect, url_for
 from database import get_session, metadata
 
@@ -9,72 +8,11 @@ auth_bp = Blueprint('auth_bp', __name__,
 def get_data():
     session = get_session()
     Klient = metadata.tables['klient']
+    print(Klient.c.keys())
     data = session.query(Klient.c.id_uz).all()
     session.close()
     
     return str(data)
-
-
-@auth_bp.route('/listOfClientsSql', methods=['GET'])
-def listOfPersons():
-    session = get_session()
-    reportTitle = "ClientsListSql"
-    sqlQuery = "SELECT marka AS \"Marka pojazdu\", model AS \"Model Pojazdu\", rok_produkcji AS \"Rok produkcji pojazdu\" FROM pojazd"
-
-    results = session.execute(sqlQuery)
-
-    # Convert the results to a list of dictionaries
-    data = [dict(row) for row in results]
-
-    session.close()
-
-    return render_template('report_complaints_t.html', reportTitle=reportTitle, data=data)
-
-
-@auth_bp.route('/listOfClientsSqlAlcheme', methods=['GET'])
-def listOfPersons_alcheme():
-    session = get_session()
-    Pojazd = metadata.tables['pojazd']
-    reportTitle = "ClientsListSqlAlcheme"
-
-    results = session.query(Pojazd.c.marka.label("Marka pojazdu"), Pojazd.c.model.label("Model Pojazdu"), Pojazd.c.rok_produkcji.label("Rok produkcji pojazdu")).all()
-
-    # Convert the results to a list of dictionaries
-    data = [dict(row) for row in results]
-
-    session.close()
-
-    return render_template('report.html', reportTitle=reportTitle, data=data)
-
-
-@auth_bp.route('/listofcomplaints', methods=['GET'])
-def listOfComplaints_alcheme():
-    session = get_session()
-    reklamacja = metadata.tables['reklamacja']
-    rozwiazanie = metadata.tables['rozwiazanie']
-    zreal_napr = metadata.tables['zrealnapr']
-    reportTitle = "Lista reklamacji"
-
-    query = session.query(
-        reklamacja.c.opis.label("Opis reklamacji"),
-        rozwiazanie.c.nazwa.label("Co nalezy zrobic"),
-        zreal_napr.c.data_realizacji.label("Data naprawy"),
-        zreal_napr.c.opis_po_naprawie.label("Opis naprawy")
-    ).join(
-        rozwiazanie, rozwiazanie.c.id_rozw == reklamacja.c.rozwiazanie_id_rozw
-    ).join(
-        zreal_napr, zreal_napr.c.id_napr == reklamacja.c.zrealnapr_id_napr
-    )
-    results = query.all()
-    # Convert the results to a list of dictionaries
-    data = [dict(row) for row in results]
-
-    session.close()
-
-    return render_template('report_complaints_t.html', reportTitle=reportTitle, data=data)
-
-
-
 
 # In-memory user database for demonstration purposes
 users = [
