@@ -28,3 +28,5 @@
     ```
     python app.py
     ```
+
+Do not forget to change your .env file with valid credentials. 
