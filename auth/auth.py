@@ -1,3 +1,5 @@
+from sqlalchemy import func
+from flask_sqlalchemy_report import Reporter 
 from flask import Blueprint, render_template, request, redirect, url_for
 from database import get_session, metadata
 
@@ -8,11 +10,42 @@ auth_bp = Blueprint('auth_bp', __name__,
 def get_data():
     session = get_session()
     Klient = metadata.tables['klient']
-    print(Klient.c.keys())
     data = session.query(Klient.c.id_uz).all()
     session.close()
     
     return str(data)
+
+
+@auth_bp.route('/listOfClientsSql', methods=['GET'])
+def listOfPersons():
+    session = get_session()
+    reportTitle = "ClientsListSql"
+    sqlQuery = "SELECT marka AS \"Marka pojazdu\", model AS \"Model Pojazdu\", rok_produkcji AS \"Rok produkcji pojazdu\" FROM pojazd"
+
+    results = session.execute(sqlQuery)
+
+    # Convert the results to a list of dictionaries
+    data = [dict(row) for row in results]
+
+    session.close()
+
+    return render_template('report.html', reportTitle=reportTitle, data=data)
+
+
+@auth_bp.route('/listOfClientsSqlAlcheme', methods=['GET'])
+def listOfPersons_alcheme():
+    session = get_session()
+    Pojazd = metadata.tables['pojazd']
+    reportTitle = "ClientsListSqlAlcheme"
+
+    results = session.query(Pojazd.c.marka.label("Marka pojazdu"), Pojazd.c.model.label("Model Pojazdu"), Pojazd.c.rok_produkcji.label("Rok produkcji pojazdu")).all()
+
+    # Convert the results to a list of dictionaries
+    data = [dict(row) for row in results]
+
+    session.close()
+
+    return render_template('report.html', reportTitle=reportTitle, data=data)
 
 # In-memory user database for demonstration purposes
 users = [
