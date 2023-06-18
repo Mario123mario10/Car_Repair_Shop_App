@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Report</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('auth_bp.static', filename='css/report.css') }}">
+</head>
+<body>
+  <h1>{{ reportTitle }}</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Marka pojazdu</th>
+        <th>Model Pojazdu</th>
+        <th>Rok produkcji pojazdu</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr>
+        <td>{{ row['Marka pojazdu'] }}</td>
+        <td>{{ row['Model Pojazdu'] }}</td>
+        <td>{{ row['Rok produkcji pojazdu'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
