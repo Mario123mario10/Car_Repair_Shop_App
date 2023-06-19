@@ -1,5 +1,4 @@
 from sqlalchemy import func
-from flask_sqlalchemy_report import Reporter 
 from flask import Blueprint, render_template, request, redirect, url_for
 from database import get_session, metadata
 
@@ -29,7 +28,7 @@ def listOfPersons():
 
     session.close()
 
-    return render_template('report.html', reportTitle=reportTitle, data=data)
+    return render_template('report_complaints_t.html', reportTitle=reportTitle, data=data)
 
 
 @auth_bp.route('/listOfClientsSqlAlcheme', methods=['GET'])
@@ -46,6 +45,36 @@ def listOfPersons_alcheme():
     session.close()
 
     return render_template('report.html', reportTitle=reportTitle, data=data)
+
+
+@auth_bp.route('/listofcomplaints', methods=['GET'])
+def listOfComplaints_alcheme():
+    session = get_session()
+    reklamacja = metadata.tables['reklamacja']
+    rozwiazanie = metadata.tables['rozwiazanie']
+    zreal_napr = metadata.tables['zrealnapr']
+    reportTitle = "Lista reklamacji"
+
+    query = session.query(
+        reklamacja.c.opis.label("Opis reklamacji"),
+        rozwiazanie.c.nazwa.label("Co nalezy zrobic"),
+        zreal_napr.c.data_realizacji.label("Data naprawy"),
+        zreal_napr.c.opis_po_naprawie.label("Opis naprawy")
+    ).join(
+        rozwiazanie, rozwiazanie.c.id_rozw == reklamacja.c.rozwiazanie_id_rozw
+    ).join(
+        zreal_napr, zreal_napr.c.id_napr == reklamacja.c.zrealnapr_id_napr
+    )
+    results = query.all()
+    # Convert the results to a list of dictionaries
+    data = [dict(row) for row in results]
+
+    session.close()
+
+    return render_template('report_complaints_t.html', reportTitle=reportTitle, data=data)
+
+
+
 
 # In-memory user database for demonstration purposes
 users = [
