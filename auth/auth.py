@@ -1,10 +1,13 @@
 from sqlalchemy import func
-from flask_sqlalchemy_report import Reporter 
 from flask import Blueprint, render_template, request, redirect, url_for
 from database import get_session, metadata
 
 auth_bp = Blueprint('auth_bp', __name__,
                     template_folder='templates/auth', static_folder='static')
+
+"""
+    Tests routes - have to be removed before main released
+"""
 
 @auth_bp.route('/data')
 def get_data():
@@ -16,10 +19,10 @@ def get_data():
     return str(data)
 
 
-@auth_bp.route('/listOfClientsSql', methods=['GET'])
-def listOfPersons():
+@auth_bp.route('/listOfCarsSql', methods=['GET'])
+def listOfCars():
     session = get_session()
-    reportTitle = "ClientsListSql"
+    reportTitle = "CarssListSql"
     sqlQuery = "SELECT marka AS \"Marka pojazdu\", model AS \"Model Pojazdu\", rok_produkcji AS \"Rok produkcji pojazdu\" FROM pojazd"
 
     results = session.execute(sqlQuery)
@@ -32,11 +35,11 @@ def listOfPersons():
     return render_template('report.html', reportTitle=reportTitle, data=data)
 
 
-@auth_bp.route('/listOfClientsSqlAlcheme', methods=['GET'])
+@auth_bp.route('/listOfCarsSqlAlcheme', methods=['GET'])
 def listOfPersons_alcheme():
     session = get_session()
     Pojazd = metadata.tables['pojazd']
-    reportTitle = "ClientsListSqlAlcheme"
+    reportTitle = "CarsListSqlAlcheme"
 
     results = session.query(Pojazd.c.marka.label("Marka pojazdu"), Pojazd.c.model.label("Model Pojazdu"), Pojazd.c.rok_produkcji.label("Rok produkcji pojazdu")).all()
 
@@ -47,6 +50,10 @@ def listOfPersons_alcheme():
 
     return render_template('report.html', reportTitle=reportTitle, data=data)
 
+
+"""
+    Actual code
+"""
 # In-memory user database for demonstration purposes
 users = [
     {'username': 'mechanic1', 'password': 'mechpass1', 'role': 'mechanic'},
@@ -54,7 +61,7 @@ users = [
     {'username': 'client1', 'password': 'clientpass1', 'role': 'client'}
 ]
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/', methods=['GET', 'POST'])
 def login():
     error_flag = False
 
