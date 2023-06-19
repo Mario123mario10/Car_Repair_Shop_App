@@ -1,20 +1,9 @@
 from sqlalchemy import func
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Email
-from werkzeug.security import check_password_hash
-from database import get_session, metadata, Klient, Uzytkownik
-from general import generate_unique_key
-from werkzeug.security import generate_password_hash
-
+from flask import Blueprint, render_template, request, redirect, url_for
+from database import get_session, metadata
 
 auth_bp = Blueprint('auth_bp', __name__,
                     template_folder='templates/auth', static_folder='static')
-
-"""
-    Tests routes - have to be removed before main released
-"""
 
 @auth_bp.route('/data')
 def get_data():
@@ -26,10 +15,10 @@ def get_data():
     return str(data)
 
 
-@auth_bp.route('/listOfCarsSql', methods=['GET'])
-def listOfCars():
+@auth_bp.route('/listOfClientsSql', methods=['GET'])
+def listOfPersons():
     session = get_session()
-    reportTitle = "CarssListSql"
+    reportTitle = "ClientsListSql"
     sqlQuery = "SELECT marka AS \"Marka pojazdu\", model AS \"Model Pojazdu\", rok_produkcji AS \"Rok produkcji pojazdu\" FROM pojazd"
 
     results = session.execute(sqlQuery)
@@ -39,14 +28,14 @@ def listOfCars():
 
     session.close()
 
-    return render_template('report.html', reportTitle=reportTitle, data=data)
+    return render_template('report_complaints_t.html', reportTitle=reportTitle, data=data)
 
 
-@auth_bp.route('/listOfCarsSqlAlcheme', methods=['GET'])
+@auth_bp.route('/listOfClientsSqlAlcheme', methods=['GET'])
 def listOfPersons_alcheme():
     session = get_session()
     Pojazd = metadata.tables['pojazd']
-    reportTitle = "CarsListSqlAlcheme"
+    reportTitle = "ClientsListSqlAlcheme"
 
     results = session.query(Pojazd.c.marka.label("Marka pojazdu"), Pojazd.c.model.label("Model Pojazdu"), Pojazd.c.rok_produkcji.label("Rok produkcji pojazdu")).all()
 
@@ -58,87 +47,106 @@ def listOfPersons_alcheme():
     return render_template('report.html', reportTitle=reportTitle, data=data)
 
 
-"""
-    Actual code
-"""
-class LoginForm(FlaskForm):
-    login = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    role = SelectField('Role', choices=[('administrator', 'Administrator'), ('mechanik', 'Mechanik'), ('klient', 'Klient')], validators=[DataRequired()])
-    submit = SubmitField('Login')
-
-
-class RegistrationForm(FlaskForm):
-    first_name = StringField('First Name', validators=[DataRequired()])
-    last_name = StringField('Last Name', validators=[DataRequired()])
-    email = StringField('Email Address', validators=[DataRequired(), Email()])
-    phone_number = StringField('Phone Number', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Register')
-
-
-@auth_bp.route('/', methods=['GET', 'POST'])
-def login():
+@auth_bp.route('/listofcomplaints', methods=['GET'])
+def listOfComplaints_alcheme():
     session = get_session()
+    reklamacja = metadata.tables['reklamacja']
+    rozwiazanie = metadata.tables['rozwiazanie']
+    zreal_napr = metadata.tables['zrealnapr']
+    reportTitle = "Lista reklamacji"
 
-    Uzytkownik = metadata.tables['uzytkownik']
-
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = session.query(Uzytkownik).filter(Uzytkownik.c.adres_mailowy == form.login.data).first()
-        if user:
-            if check_password_hash(user.skrot_hasla, form.password.data):
-                role = form.role.data
-                if role == 'administrator' and user.typ == 'administrator':
-                    return redirect(url_for('admin_bp.admin_dashboard'))
-                elif role == 'mechanik' and user.typ == 'mechanik':
-                    return redirect(url_for('mechanic_bp.mechanic_dashboard'))
-                elif role == 'klient' and user.typ == 'klient':
-                    return redirect(url_for('client_bp.client_dashboard'))
-                else:
-                    flash('Invalid role selected for this user', 'danger')
-            else:
-                flash('Invalid password', 'danger')
-        else:
-            flash('Invalid email', 'danger')
+    query = session.query(
+        reklamacja.c.opis.label("Opis reklamacji"),
+        rozwiazanie.c.nazwa.label("Co nalezy zrobic"),
+        zreal_napr.c.data_realizacji.label("Data naprawy"),
+        zreal_napr.c.opis_po_naprawie.label("Opis naprawy")
+    ).join(
+        rozwiazanie, rozwiazanie.c.id_rozw == reklamacja.c.rozwiazanie_id_rozw
+    ).join(
+        zreal_napr, zreal_napr.c.id_napr == reklamacja.c.zrealnapr_id_napr
+    )
+    results = query.all()
+    # Convert the results to a list of dictionaries
+    data = [dict(row) for row in results]
 
     session.close()
 
-    return render_template('auth.html', form=form)
+    return render_template('report_complaints_t.html', reportTitle=reportTitle, data=data)
+
+
+
+
+# In-memory user database for demonstration purposes
+users = [
+    {'username': 'mechanic1', 'password': 'mechpass1', 'role': 'mechanic'},
+    {'username': 'admin1', 'password': 'adminpass1', 'role': 'administrator'},
+    {'username': 'client1', 'password': 'clientpass1', 'role': 'client'}
+]
+
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    error_flag = False
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        if authenticate_user(username, password, role):
+            return redirect(url_for('dashboard', role = role)) 
+        else:
+            error_message = 'Invalid credentials. Please try again.'
+            error_flag = True
+            return render_template('auth.html', error = error_flag, error_message=error_message)
+    return render_template('auth.html')
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-        session = get_session()
-        form = RegistrationForm()
-        UzytkownikTable = metadata.tables['uzytkownik']
-        user = None
-        print("What")
+    if request.method == 'POST':
+        # Get form data
+        street = request.form['street']
+        house_number = request.form['house_number']
+        apartment_number = request.form['apartment_number']
+        zip_code = request.form['zip_code']
+        city = request.form['city']
+        country = request.form['country']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        phone_number = request.form['phone_number']
+        email = request.form['email']
+        password = request.form['password']
+        
+        # Perform validation
+        if not (street and house_number and zip_code and city and country and first_name and last_name and phone_number and email and password):
+            error_message = 'Not all required fields are completed.'
+            return render_template('register.html', error_message=error_message)
 
-        if form.validate_on_submit():
-            user = Uzytkownik.query.filter_by(adres_mailowy=form.email.data).first()
-            print("CO sie stalo")
+        # Register the user as a client
+        user = {
+            'username': email,
+            'password': password,
+            'role': 'client'
+        }
+        users.append(user)
 
-        if user is None and form.first_name.data:
-            new_id = generate_unique_key()
-            print(f'I am here {new_id}')
-            user = Uzytkownik(id_uz=new_id, imie=form.first_name.data, nazwisko=form.last_name.data, adres_mailowy=form.email.data, skrot_hasla=generate_password_hash(form.password.data), nr_telefonu=form.phone_number.data, typ="klient")
-            client = Klient(id_uz=new_id)
-            form.first_name.data = ''
-            form.last_name.data = ''
-            form.password.data = ''
-            form.phone_number.data   = ''
-            form.email.data = ''
+        return redirect(url_for('login'))
 
-            flash(f'Account created!' , 'success')
-
-            session.add(user)
-            session.add(client)
-            session.commit()
-        else:
-            flash(f'Error (maybe this account already exists)!', 'danger')
-
-        session.close()
-        return render_template('register.html', form=form)
+    return render_template('register.html')
 
 
+@auth_bp.route('/dashboard/<role>')
+def dashboard(role):
+    # Replace this logic with your own implementation to retrieve the currently logged-in user
+    if role== 'mechanic':
+        return render_template('mechanic/mechanic_dashboard.html')
+    elif role == 'administrator':
+        return render_template('admin/admin_dashboard.html')
+    else:
+        return render_template('client/client_dashboard.html')
+
+
+def authenticate_user(username, password, role):
+    for user in users:
+        if user['username'] == username and user['password'] == password and user['role'] == role:
+            return True
+    return False

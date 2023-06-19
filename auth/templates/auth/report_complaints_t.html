@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Marka pojazdu</title>
+  <title>Report</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('auth_bp.static', filename='css/report.css') }}">
 </head>
 <body>
@@ -10,17 +10,19 @@
   <table>
     <thead>
       <tr>
-        <th></th>
-        <th>Model Pojazdu</th>
-        <th>Rok produkcji pojazdu</th>
+        <th>Opis reklamacji</th>
+        <th>Co nalezy zrobic</th>
+        <th>Data naprawy</th>
+        <th>Opis naprawy</th>
       </tr>
     </thead>
     <tbody>
       {% for row in data %}
       <tr>
-        <td>{{ row['Marka pojazdu'] }}</td>
-        <td>{{ row['Model Pojazdu'] }}</td>
-        <td>{{ row['Rok produkcji pojazdu'] }}</td>
+        <td>{{ row['Opis reklamacji'] }}</td>
+        <td>{{ row['Co nalezy zrobic'] }}</td>
+        <td>{{ row['Data naprawy'] }}</td>
+        <td>{{ row['Opis naprawy'] }}</td>
       </tr>
       {% endfor %}
     </tbody>
