@@ -6,28 +6,21 @@
 </head>
 <body>
   <h2>Login</h2>
-  <form method="POST" action="/">
-    {% if error %}
-    <div class="error-frame">
-      <p class="error-message">{{ error_message }}</p>
-    </div>
-    {% endif %}
+  <form method="POST">
+    {{ form.csrf_token }}
+
     <div>
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
+      {{ form.login.label }} {{ form.login(class="form-control", required=True) }}
     </div>
+
     <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
+      {{ form.password.label }} {{ form.password(class="form-control", required=True) }}
     </div>
+
     <div>
-      <label for="role">Role:</label>
-      <select id="role" name="role">
-        <option value="mechanic">Mechanic</option>
-        <option value="administrator">Administrator</option>
-        <option value="client">Client</option>
-      </select>
+      {{ form.role.label }} {{ form.role(class="form-control") }}
     </div>
+
     <button type="submit">Login</button>
     <p>Don't have an account? <a href="/register">Register</a></p>
   </form>
