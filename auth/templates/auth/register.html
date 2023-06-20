@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+  <link rel="stylesheet" href="{{ url_for('auth_bp.static', filename='css/style.css') }}">
+</head>
+<body>
+  <h2>Registration</h2>
+
+  <form action="{{ url_for('auth_bp.register') }}" method="post">
+    {{ form.hidden_tag() }}
+
+    <div>
+      {{ form.first_name.label }}
+      {{ form.first_name(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.last_name.label }}
+      {{ form.last_name(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.phone_number.label }}
+      {{ form.phone_number(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.email.label }}
+      {{ form.email(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.password.label }}
+      {{ form.password(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.submit() }}
+    </div>
+  </form>
+</body>
+</html>
