@@ -3,3 +3,7 @@ SQLAlchemy==1.4.22
 python-dotenv
 flask_sqlalchemy
 sqlalchemy
+werkzeug
+flask_wtf
+email_validator
+os
