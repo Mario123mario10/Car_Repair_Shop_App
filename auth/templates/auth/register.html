@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Registration</title>
-  <link rel="stylesheet" href="{{ url_for('auth_bp.static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('auth_bp.static', filename='css/register.css') }}">
 </head>
 <body>
   <h2>Registration</h2>
@@ -31,7 +31,7 @@
       {{ form.password(size=20, required=True) }}
     </div>
     <div>
-      {{ form.submit() }}
+      {{ form.submit(class='register-button') }}
     </div>
   </form>
 </body>
