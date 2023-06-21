@@ -6,4 +6,3 @@ sqlalchemy
 werkzeug
 flask_wtf
 email_validator
-os
