@@ -1,0 +1,28 @@
+<html>
+<head>
+  <title>Registration</title>
+  <link rel="stylesheet" href="{{ url_for('mechanic_bp.static', filename='css/style.css') }}">
+</head>
+<body>
+  <h2>Registration</h2>
+
+  <form action="{{ url_for('mechanic_bp.registerforplace') }}" method="post">
+    <label for="ID_stanowiska">ID Stanowiska:</label>
+        <input type="text" id="ID_stanowiska" name="ID_stanowiska" required><br><br>
+
+        <label for="ID_zlecenia">ID Zlecenia:</label>
+        <input type="text" id="ID_zlecenia" name="ID_zlecenia" required><br><br>
+
+        <label for="Czas_rozpoczecia">Czas rozpoczecia:</label>
+        <input type="text" id="Czas_rozpoczecia" name="Czas rozpoczecia" required><br><br>
+
+        <label for="Czas_zakonczenia">Czas zakonczenia:</label>
+        <input type="text" id="Czas_zakonczenia" name="Czas zakonczenia" required><br><br>
+
+        <label for="id_mechanika">ID Mechanika:</label>
+        <input type="text" id="id_mechanika" name="id_mechanika" required><br><br>
+
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
