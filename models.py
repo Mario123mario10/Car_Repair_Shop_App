@@ -75,7 +75,7 @@ class Pojazd(db.Model):
     kolor = Column(String(50))
     rodzaj_paliwa = Column(String(50))
     przebieg_w_km = Column(Numeric(10))
-    klient_id_uż = Column(Integer, nullable=False)
+    klient_id_uz = Column(Integer, nullable=False)
 
     zlecenia = relationship('Zlecenie', back_populates='pojazd')
 
@@ -126,17 +126,17 @@ class Premia(db.Model):
     id_mech = Column(Integer, nullable=False)
     miesiąc = Column(Integer, nullable=False)
     rok = Column(Integer, nullable=False)
-    wysokość_premii = Column(Numeric(10), nullable=False)
-    mechanik_id_uż = Column(Integer, ForeignKey('mechanik.id_uż'), nullable=False)
+    wysokosc_premii = Column(Numeric(10), nullable=False)
+    mechanik_id_uz = Column(Integer, ForeignKey('mechanik.id_uz'), nullable=False)
 
     mechanik = relationship('Mechanik', back_populates='premie')
 
     __table_args__ = (
-        PrimaryKeyConstraint('id_mech', 'miesiąc', 'rok'),
+        PrimaryKeyConstraint('id_mech', 'miesiac', 'rok'),
     )
 
     def __repr__(self):
-        return f"Premia(id_mech={self.id_mech}, miesiąc={self.miesiąc}, rok={self.rok}, wysokość_premii={self.wysokość_premii})"
+        return f"Premia(id_mech={self.id_mech}, miesiąc={self.miesiąc}, rok={self.rok}, wysokosc_premii={self.wysokosc_premii})"
     
 
 class ZrealNapr(db.Model):
@@ -212,7 +212,7 @@ class Termin(db.Model):
     id_wpisu = Column(Integer, primary_key=True)
     czas_rozpoczecia = Column(Date, nullable=False)
     czas_zakonczenia = Column(Date, nullable=False)
-    mechanik_id_uż = Column(Integer, ForeignKey('mechanik.id_uż'), nullable=False)
+    mechanik_id_uz = Column(Integer, ForeignKey('mechanik.id_uz'), nullable=False)
     typ = Column(String(20), nullable=False)
 
     mechanik = relationship('Mechanik', back_populates='terminy')
@@ -221,21 +221,21 @@ class Termin(db.Model):
     terminmaszyny = relationship('TerminMaszyna', back_populates='termin')
 
     def __repr__(self):
-        return f"Termin(id_wpisu={self.id_wpisu}, czas_rozpoczecia={self.czas_rozpoczecia}, czas_zakonczenia={self.czas_zakonczenia}, mechanik_id_uż={self.mechanik_id_uż}, typ={self.typ})"
+        return f"Termin(id_wpisu={self.id_wpisu}, czas_rozpoczecia={self.czas_rozpoczecia}, czas_zakonczenia={self.czas_zakonczenia}, mechanik_id_uz={self.mechanik_id_uz}, typ={self.typ})"
     
 
 class TerminKlient(db.Model):
     __tablename__ = 'terminklient'
 
     id_wpisu = Column(Integer, ForeignKey('termin.id_wpisu'), primary_key=True)
-    klient_id_uż = Column(Integer, ForeignKey('klient.id_uż'), nullable=False)
+    klient_id_uz = Column(Integer, ForeignKey('klient.id_uz'), nullable=False)
 
     klient = relationship('Klient', back_populates='terminy_spotkan')
     termin = relationship('Termin', back_populates='terminklienci')
 
 
     def __repr__(self):
-        return f"TerminKlient(id_wpisu={self.id_wpisu}, klient_id_uż={self.klient_id_uż})"
+        return f"TerminKlient(id_wpisu={self.id_wpisu}, klient_id_uz={self.klient_id_uz})"
     
 
 class TerminMaszyna(db.Model):
@@ -288,46 +288,46 @@ class UzycieCzesci(db.Model):
 class Uzytkownik(db.Model):
     __tablename__ = 'uzytkownik'
 
-    id_uż = Column(Integer, primary_key=True)
+    id_uz = Column(Integer, primary_key=True)
     imie = Column(String(100), nullable=False)
     nazwisko = Column(String(100), nullable=False)
     nr_telefonu = Column(String(50), nullable=False)
     adres_mailowy = Column(String(100), nullable=False)
-    skrot_hasła = Column(String(100), nullable=False)
+    skrot_hasla = Column(String(100), nullable=False)
     adres_id_adresu = Column(Integer, nullable=False)
     typ = Column(String(20), nullable=False)
 
     def __repr__(self):
-        return f"Uzytkownik(id_uż={self.id_uż}, imie='{self.imie}', nazwisko='{self.nazwisko}', nr_telefonu='{self.nr_telefonu}', adres_mailowy='{self.adres_mailowy}', skrot_hasła='{self.skrot_hasła}', adres_id_adresu={self.adres_id_adresu}, typ='{self.typ}')"
+        return f"Uzytkownik(id_uz={self.id_uz}, imie='{self.imie}', nazwisko='{self.nazwisko}', nr_telefonu='{self.nr_telefonu}', adres_mailowy='{self.adres_mailowy}', skrot_hasla='{self.skrot_hasla}', adres_id_adresu={self.adres_id_adresu}, typ='{self.typ}')"
  
     
 class Klient(db.Model):
     __tablename__ = 'klient'
 
-    id_uż = Column(Integer, ForeignKey('uzytkownik.id_uż'), primary_key=True)
+    id_uz = Column(Integer, ForeignKey('uzytkownik.id_uz'), primary_key=True)
 
     uzytkownik = relationship(Uzytkownik, uselist=False, backref='klient')
     terminy_spotkan = relationship('TerminKlient', back_populates='klient')
 
     def __repr__(self):
-        return f"Klient(id_uż={self.id_uż})"
+        return f"Klient(id_uz={self.id_uz})"
 
 
 class Administrator(db.Model):
     __tablename__ = 'administrator'
 
-    id_uż = Column(Integer, ForeignKey('uzytkownik.id_uż'), primary_key=True)
+    id_uz = Column(Integer, ForeignKey('uzytkownik.id_uz'), primary_key=True)
 
     uzytkownik = relationship(Uzytkownik, uselist=False, backref='administrator')
 
     def __repr__(self):
-        return f"Administrator(id_uż={self.id_uż})"
+        return f"Administrator(id_uz={self.id_uz})"
     
 
 class Mechanik(db.Model):
     __tablename__ = 'mechanik'
 
-    id_uż = Column(Integer, ForeignKey('uzytkownik.id_uż'), primary_key=True)
+    id_uz = Column(Integer, ForeignKey('uzytkownik.id_uz'), primary_key=True)
     pensja = Column(Numeric(10, 2), nullable=False)
 
     uzytkownik = relationship(Uzytkownik, uselist=False, backref='mechanik')
@@ -336,7 +336,7 @@ class Mechanik(db.Model):
     zlecenia = relationship('Zlecenie', back_populates='mechanik')
 
     def __repr__(self):
-        return f"Mechanik(id_uż={self.id_uż}, pensja={self.pensja})"
+        return f"Mechanik(id_uz={self.id_uz}, pensja={self.pensja})"
 
 
 class Zamowienie(db.Model):
@@ -363,7 +363,7 @@ class Zlecenie(db.Model):
     szacowany_czas_naprawy = Column(Integer, nullable=False)
     pojazd_id_poj = Column(Integer, ForeignKey('pojazd.id_poj'), nullable=False)
     status_id_stat = Column(Integer, ForeignKey('status.id_stat'), nullable=False)
-    mechanik_id_uż = Column(Integer, ForeignKey('mechanik.id_uż'), nullable=False)
+    mechanik_id_uz = Column(Integer, ForeignKey('mechanik.id_uz'), nullable=False)
 
     terminy_pracy_maszyna = relationship('TerminMaszyna', back_populates='zlecenie')
     terminy_pracy_stanowisko = relationship('TerminStanowisko', back_populates='zlecenie')
@@ -374,17 +374,17 @@ class Zlecenie(db.Model):
     zrealnapr = relationship('ZrealNapr', back_populates='zlecenie')
 
     def __repr__(self):
-        return f"Zlecenie(id_zlec={self.id_zlec}, opis_przed_naprawa='{self.opis_przed_naprawa}', data_przyjecia='{self.data_przyjecia}', szacowany_czas_naprawy={self.szacowany_czas_naprawy}, pojazd_id_poj={self.pojazd_id_poj}, status_id_stat={self.status_id_stat}, mechanik_id_uż={self.mechanik_id_uż})"
+        return f"Zlecenie(id_zlec={self.id_zlec}, opis_przed_naprawa='{self.opis_przed_naprawa}', data_przyjecia='{self.data_przyjecia}', szacowany_czas_naprawy={self.szacowany_czas_naprawy}, pojazd_id_poj={self.pojazd_id_poj}, status_id_stat={self.status_id_stat}, mechanik_id_uz={self.mechanik_id_uz})"
     
 
 
 def arc_fkarc_2_klient(target, connection, **kwargs):
     session = Session.object_session(target)
 
-    d = session.query(Uzytkownik.typ).filter(Uzytkownik.id_uż == target.id_uż).scalar()
+    d = session.query(Uzytkownik.typ).filter(Uzytkownik.id_uz == target.id_uz).scalar()
 
     if d is None or d != 'klient':
-        raise ValueError("FK Klient_Użytkownik_FK in Table Klient violates Arc constraint on Table Uzytkownik - discriminator column typ doesn't have value 'klient'")
+        raise ValueError("FK Klient_Uzytkownik_FK in Table Klient violates Arc constraint on Table Uzytkownik - discriminator column typ doesn't have value 'klient'")
     
     print("Event listener executed successfully")
 
@@ -392,10 +392,10 @@ def arc_fkarc_2_klient(target, connection, **kwargs):
 def arc_fkarc_2_administrator(target, connection, **kwargs):
     session = Session.object_session(target)
 
-    d = session.query(Uzytkownik.typ).filter(Uzytkownik.id_uż == target.id_uż).scalar()
+    d = session.query(Uzytkownik.typ).filter(Uzytkownik.id_uz == target.id_uz).scalar()
 
     if d is None or d != 'administrator':
-        raise ValueError("FK Administrator_Użytkownik_FK in Table Administrator violates Arc constraint on Table Uzytkownik - discriminator column typ doesn't have value 'administrator'")
+        raise ValueError("FK Administrator_Uzytkownik_FK in Table Administrator violates Arc constraint on Table Uzytkownik - discriminator column typ doesn't have value 'administrator'")
 
     print("Event listener executed successfully")
 
@@ -403,10 +403,10 @@ def arc_fkarc_2_administrator(target, connection, **kwargs):
 def arc_fkarc_2_mechanik(target, connection, **kwargs):
     session = Session.object_session(target)
 
-    d = session.query(Uzytkownik.typ).filter(Uzytkownik.id_uż == target.id_uż).scalar()
+    d = session.query(Uzytkownik.typ).filter(Uzytkownik.id_uz == target.id_uz).scalar()
 
     if d is None or d != 'mechanik':
-        raise ValueError("FK Mechanik_Użytkownik_FK in Table Mechanik violates Arc constraint on Table Uzytkownik - discriminator column typ doesn't have value 'mechanik'")
+        raise ValueError("FK Mechanik_Uzytkownik_FK in Table Mechanik violates Arc constraint on Table Uzytkownik - discriminator column typ doesn't have value 'mechanik'")
 
     print("Event listener executed successfully")
 
