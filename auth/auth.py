@@ -109,12 +109,12 @@ def login():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-        session = get_session()
-        form = RegistrationForm()
-        user = None
+    session = get_session()
+    form = RegistrationForm()
+    user = None
 
-        if form.validate_on_submit():
-            user = Uzytkownik.query.filter_by(adres_mailowy=form.email.data).first()
+    if form.validate_on_submit():
+        user = Uzytkownik.query.filter_by(adres_mailowy=form.email.data).first()
 
         if user is None and form.first_name.data:
             new_id = generate_unique_key()
@@ -124,18 +124,16 @@ def register():
             form.first_name.data = ''
             form.last_name.data = ''
             form.password.data = ''
-            form.phone_number.data   = ''
+            form.phone_number.data = ''
             form.email.data = ''
 
-            flash(f'Account created!' , 'success')
+            flash('Account created!', 'success')
 
             session.add(user)
             session.add(client)
             session.commit()
         else:
-            flash(f'Error (maybe this account already exists)!', 'danger')
+            flash('Error (maybe this account already exists)!', 'danger')
 
-        session.close()
-        return render_template('register.html', form=form)
-
-
+    session.close()
+    return render_template('register.html', form=form)

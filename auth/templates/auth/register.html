@@ -7,6 +7,16 @@
 <body>
   <h2>Registration</h2>
 
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for message in messages %}
+          <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <form action="{{ url_for('auth_bp.register') }}" method="post">
     {{ form.hidden_tag() }}
 
