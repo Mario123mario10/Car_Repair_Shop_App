@@ -109,6 +109,7 @@
     <a class="back-button" href="{{ url_for('mechanic_bp.mechanic_dashboard') }}">Main Page</a>
     <h1>Mechanic Features</h1>
     <div class="button-container">
+        <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='zlecenie') }}">Task</a>
         <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table1') }}">Cars to repair</a>
         <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table2') }}">Book a machine</a>
         <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table3') }}">Parts in magazines</a>
@@ -119,8 +120,8 @@
             {% for header in data[0].keys() %}
             <th>{{ header }}</th>
             {% endfor %}
-            {% if table_id != 'reservation' %}
-            <th>Action</th>
+            {% if table_id != 'reservation' and table_id != 'zlecenie' %}
+            <th>Możliwe działanie</th>
             {% endif %}
         </tr>
         {% for row in data %}
@@ -130,9 +131,9 @@
             {% endfor %}
             <td>
                 {% if table_id == 'table3' %}
-                <a class="print-button" href="{{ url_for('mechanic_bp.reserve', message=row.values()|list|first) }}">Pokaz w magazynie</a>
-                {% elif table_id != 'reservation' %}
-                <a class="print-button" href="{{ url_for('mechanic_bp.print_message', message=row.values()|list|first) }}">Rezerwuj</a>
+                <a class="print-button" href="{{ url_for('mechanic_bp.reserve', message=row.values()|list|first) }}">See in magazine</a>
+                {% elif table_id != 'reservation' and table_id != 'zlecenie' %}
+                <a class="print-button" href="{{ url_for('mechanic_bp.print_message', message=row.values()|list|first) }}">Book</a>
                 {% endif %}
             </td>
         </tr>
