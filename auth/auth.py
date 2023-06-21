@@ -4,10 +4,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email
 from werkzeug.security import check_password_hash
-from database import get_session, metadata
-# from ..client import client_bp
-# from ..mechanic import admin_bp
-# from ..admin import mechanic_bp
+from database import get_session, metadata, Klient, Uzytkownik
+from general import generate_unique_key
+from werkzeug.security import generate_password_hash
 
 
 auth_bp = Blueprint('auth_bp', __name__,
@@ -18,7 +17,7 @@ auth_bp = Blueprint('auth_bp', __name__,
 """
 
 @auth_bp.route('/data')
-def get_data():
+def getData():
     session = get_session()
     Klient = metadata.tables['klient']
     data = session.query(Klient.c.id_uz).all()
@@ -44,7 +43,7 @@ def listOfCars():
 
 
 @auth_bp.route('/listOfCarsSqlAlcheme', methods=['GET'])
-def listOfPersons_alcheme():
+def listOfPersonsAlcheme():
     session = get_session()
     Pojazd = metadata.tables['pojazd']
     reportTitle = "CarsListSqlAlcheme"
@@ -68,19 +67,25 @@ class LoginForm(FlaskForm):
     role = SelectField('Role', choices=[('administrator', 'Administrator'), ('mechanik', 'Mechanik'), ('klient', 'Klient')], validators=[DataRequired()])
     submit = SubmitField('Login')
 
+
+class RegistrationForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
+    email = StringField('Email Address', validators=[DataRequired(), Email()])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Register')
+
+
 @auth_bp.route('/', methods=['GET', 'POST'])
 def login():
     session = get_session()
 
     Uzytkownik = metadata.tables['uzytkownik']
-    Klient = metadata.tables['klient']
-    Mechanik = metadata.tables['mechanik']
-    Admin = metadata.tables['administrator']
 
     form = LoginForm()
     if form.validate_on_submit():
         user = session.query(Uzytkownik).filter(Uzytkownik.c.adres_mailowy == form.login.data).first()
-        print(user)
         if user:
             if check_password_hash(user.skrot_hasla, form.password.data):
                 role = form.role.data
@@ -102,47 +107,35 @@ def login():
     return render_template('auth.html', form=form)
 
 
-
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        # Get form data
-        street = request.form['street']
-        house_number = request.form['house_number']
-        apartment_number = request.form['apartment_number']
-        zip_code = request.form['zip_code']
-        city = request.form['city']
-        country = request.form['country']
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        phone_number = request.form['phone_number']
-        email = request.form['email']
-        password = request.form['password']
-        
-        # Perform validation
-        if not (street and house_number and zip_code and city and country and first_name and last_name and phone_number and email and password):
-            error_message = 'Not all required fields are completed.'
-            return render_template('register.html', error_message=error_message)
+        session = get_session()
+        form = RegistrationForm()
+        user = None
 
-        # Register the user as a client
-        user = {
-            'username': email,
-            'password': password,
-            'role': 'client'
-        }
-        users.append(user)
+        if form.validate_on_submit():
+            user = Uzytkownik.query.filter_by(adres_mailowy=form.email.data).first()
 
-        return redirect(url_for('login'))
+        if user is None and form.first_name.data:
+            new_id = generate_unique_key()
+            print(f'I am here {new_id}')
+            user = Uzytkownik(id_uz=new_id, imie=form.first_name.data, nazwisko=form.last_name.data, adres_mailowy=form.email.data, skrot_hasla=generate_password_hash(form.password.data), nr_telefonu=form.phone_number.data, typ="klient")
+            client = Klient(id_uz=new_id)
+            form.first_name.data = ''
+            form.last_name.data = ''
+            form.password.data = ''
+            form.phone_number.data   = ''
+            form.email.data = ''
 
-    return render_template('register.html')
+            flash(f'Account created!' , 'success')
+
+            session.add(user)
+            session.add(client)
+            session.commit()
+        else:
+            flash(f'Error (maybe this account already exists)!', 'danger')
+
+        session.close()
+        return render_template('register.html', form=form)
 
 
-@auth_bp.route('/dashboard/<role>')
-def dashboard(role):
-    # Replace this logic with your own implementation to retrieve the currently logged-in user
-    if role== 'mechanic':
-        return render_template('mechanic/mechanic_main.html')
-    elif role == 'administrator':
-        return render_template('admin/admin_main.html')
-    else:
-        return render_template('client/client_main.html')
