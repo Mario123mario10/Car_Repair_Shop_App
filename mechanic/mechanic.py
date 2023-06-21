@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from sqlalchemy import text
 from database import get_session, metadata
+from flask import flash
 
 mechanic_bp = Blueprint('mechanic_bp', __name__,
                         template_folder='templates/mechanic',  static_folder='static')
@@ -28,5 +29,11 @@ def mechanic_dashboard(table_id=None):
 
 @mechanic_bp.route('/print/<message>')
 def print_message(message):
+    # session = get_session()
+    # sql_query = text("UPDATE table_name SET column_name = :message WHERE condition_column = :condition_value")
+    # session.execute(sql_query, {'message': message, 'condition_value': condition_value})
+    # session.commit()
+    # session.close()
+    flash('Book complited!', 'success')
     print(message)
     return redirect(url_for('mechanic_bp.mechanic_dashboard'))

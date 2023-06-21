@@ -84,6 +84,25 @@
             .print-button:hover {
                 background-color: #45a049;
             }
+.flash-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.flash {
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.flash.success {
+    color: #4CAF50;
+    border-color: #4CAF50;
+}
+
         </style>
 </head>
 <body>
@@ -92,7 +111,7 @@
     <div class="button-container">
         <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table1') }}">Cars to repair</a>
         <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table2') }}">Book a machine</a>
-        <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table3') }}">Show Table 3</a>
+        <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table3') }}">Harmonogram?</a>
     </div>
     {% if data %}
     <table>
@@ -114,5 +133,14 @@
         {% endfor %}
     </table>
     {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
 </body>
 </html>
