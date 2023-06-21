@@ -1,14 +1,6 @@
 from sqlalchemy import func
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Email
-from werkzeug.security import check_password_hash
+from flask import Blueprint, render_template, request, redirect, url_for
 from database import get_session, metadata
-# from ..client import client_bp
-# from ..mechanic import admin_bp
-# from ..admin import mechanic_bp
-
 
 auth_bp = Blueprint('auth_bp', __name__,
                     template_folder='templates/auth', static_folder='static')
@@ -62,45 +54,28 @@ def listOfPersons_alcheme():
 """
     Actual code
 """
-class LoginForm(FlaskForm):
-    login = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    role = SelectField('Role', choices=[('administrator', 'Administrator'), ('mechanik', 'Mechanik'), ('klient', 'Klient')], validators=[DataRequired()])
-    submit = SubmitField('Login')
+# In-memory user database for demonstration purposes
+users = [
+    {'username': 'mechanic1', 'password': 'mechpass1', 'role': 'mechanic'},
+    {'username': 'admin1', 'password': 'adminpass1', 'role': 'administrator'},
+    {'username': 'client1', 'password': 'clientpass1', 'role': 'client'}
+]
 
 @auth_bp.route('/', methods=['GET', 'POST'])
 def login():
-    session = get_session()
+    error_flag = False
 
-    Uzytkownik = metadata.tables['uzytkownik']
-    Klient = metadata.tables['klient']
-    Mechanik = metadata.tables['mechanik']
-    Admin = metadata.tables['administrator']
-
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = session.query(Uzytkownik).filter(Uzytkownik.c.adres_mailowy == form.login.data).first()
-        print(user)
-        if user:
-            if check_password_hash(user.skrot_hasla, form.password.data):
-                role = form.role.data
-                if role == 'administrator' and user.typ == 'administrator':
-                    return redirect(url_for('admin_bp.admin_dashboard'))
-                elif role == 'mechanik' and user.typ == 'mechanik':
-                    return redirect(url_for('mechanic_bp.mechanic_dashboard'))
-                elif role == 'klient' and user.typ == 'klient':
-                    return redirect(url_for('client_bp.client_dashboard'))
-                else:
-                    flash('Invalid role selected for this user', 'danger')
-            else:
-                flash('Invalid password', 'danger')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        if authenticate_user(username, password, role):
+            return redirect(url_for('dashboard', role = role)) 
         else:
-            flash('Invalid email', 'danger')
-
-    session.close()
-
-    return render_template('auth.html', form=form)
-
+            error_message = 'Invalid credentials. Please try again.'
+            error_flag = True
+            return render_template('auth.html', error = error_flag, error_message=error_message)
+    return render_template('auth.html')
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -141,8 +116,15 @@ def register():
 def dashboard(role):
     # Replace this logic with your own implementation to retrieve the currently logged-in user
     if role== 'mechanic':
-        return render_template('mechanic/mechanic_main.html')
+        return render_template('mechanic/mechanic_dashboard.html')
     elif role == 'administrator':
-        return render_template('admin/admin_main.html')
+        return render_template('admin/admin_dashboard.html')
     else:
-        return render_template('client/client_main.html')
+        return render_template('client/client_dashboard.html')
+
+
+def authenticate_user(username, password, role):
+    for user in users:
+        if user['username'] == username and user['password'] == password and user['role'] == role:
+            return True
+    return False
