@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dodanie nowego zlecenia</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('admin_bp.static', filename='css/registration.css') }}">
+</head>
+<body>
+    <h1>Dodanie nowego zlecenia</h1>
+    <form action="{{ url_for('admin_bp.addOrder') }}" method="post">
+        {{ form.csrf_token }}
+        <div>
+            <label for="description_before_repair">Opis przed naprawą:</label>
+            <input type="text" name="description_before_repair" id="description_before_repair" required>
+        </div>
+        <div>
+            <label for="date_of_admission">Data przyjęcia:</label>
+            <input type="text" name="date_of_admission" id="date_of_admission" required>
+        </div>
+        <div>
+            <label for="estimated_repair_time">Szacowany czas naprawy:</label>
+            <input type="text" name="estimated_repair_time" id="estimated_repair_time" required>
+        </div>
+        <div>
+            <label for="vehicle_id">ID pojazdu:</label>
+            <input type="text" name="vehicle_id" id="vehicle_id" required>
+        </div>
+        <div>
+            <label for="mechanik_id">ID mechanika:</label>
+            <input type="text" name="mechanik_id" id="mechanik_id" required>
+        </div>
+        <div>
+            <input type="submit" value="Add Order">
+        </div>
+    </form>    
+</body>
+</html>

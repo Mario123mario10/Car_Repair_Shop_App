@@ -63,17 +63,17 @@ def listOfPersonsAlcheme():
 """
 class LoginForm(FlaskForm):
     login = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    role = SelectField('Role', choices=[('administrator', 'Administrator'), ('mechanik', 'Mechanik'), ('klient', 'Klient')], validators=[DataRequired()])
+    password = PasswordField('Hasło', validators=[DataRequired()])
+    role = SelectField('Rola', choices=[('administrator', 'Administrator'), ('mechanik', 'Mechanik'), ('klient', 'Klient')], validators=[DataRequired()])
     submit = SubmitField('Login')
 
 
 class RegistrationForm(FlaskForm):
-    first_name = StringField('First Name', validators=[DataRequired()])
-    last_name = StringField('Last Name', validators=[DataRequired()])
-    email = StringField('Email Address', validators=[DataRequired(), Email()])
-    phone_number = StringField('Phone Number', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    first_name = StringField('Imię', validators=[DataRequired()])
+    last_name = StringField('Nazwisko', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone_number = StringField('Numer telefonu', validators=[DataRequired()])
+    password = PasswordField('Hasło', validators=[DataRequired()])
     submit = SubmitField('Register')
 
 
@@ -118,7 +118,6 @@ def register():
 
         if user is None and form.first_name.data:
             new_id = generate_unique_key()
-            print(f'I am here {new_id}')
             user = Uzytkownik(id_uz=new_id, imie=form.first_name.data, nazwisko=form.last_name.data, adres_mailowy=form.email.data, skrot_hasla=generate_password_hash(form.password.data), nr_telefonu=form.phone_number.data, typ="klient")
             client = Klient(id_uz=new_id)
             form.first_name.data = ''

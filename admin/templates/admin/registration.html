@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+  <link rel="stylesheet" href="{{ url_for('admin_bp.static', filename='css/registration.css') }}">
+</head>
+<body>
+  <h2>Registration</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for message in messages %}
+          <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <form action="{{ url_for('admin_bp.create_account') }}" method="post">
+    {{ form.hidden_tag() }}
+
+    <div>
+      {{ form.first_name.label }}
+      {{ form.first_name(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.last_name.label }}
+      {{ form.last_name(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.phone_number.label }}
+      {{ form.phone_number(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.email.label }}
+      {{ form.email(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.password.label }}
+      {{ form.password(size=20, required=True) }}
+    </div>
+    <div>
+      <label for="typ">Typ:</label>
+      <select name="typ" id="typ" required onchange="togglePensjaInput()">
+        <option value="klient">Klient</option>
+        <option value="mechanik">Mechanik</option>
+        <option value="administrator">Administrator</option>
+      </select>
+    </div>
+    <div id="pensja-input" style="display: none;">
+      {{ form.pensja.label }}
+      {{ form.pensja(size=20, required=True) }}
+    </div>
+    <div>
+      {{ form.submit(class='register-button') }}
+    </div>
+  </form>
+
+  <script>
+    function togglePensjaInput() {
+      var typSelect = document.getElementById('typ');
+      var pensjaInput = document.getElementById('pensja-input');
+
+      if (typSelect.value === 'mechanik') {
+        pensjaInput.style.display = 'block';
+      } else {
+        pensjaInput.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
