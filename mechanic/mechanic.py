@@ -26,7 +26,6 @@ sql_queries = {
 }
 
 
-@mechanic_bp.route('/')
 def mechanic_dashboard():
     session = get_session()
     machines = metadata.tables['maszyna']
@@ -36,7 +35,7 @@ def mechanic_dashboard():
 
     query = session.query(
         dates.c.czas_rozpoczecia.label("Czas rozpoczecia rezerwacji"),
-        dates.c.czas_zakonczenia.label("Czas zakonczenia rezerwcji"),
+        dates.c.czas_zakonczenia.label("Czas zakonczenia rezerwacji"),
         machines.c.nazwa.label("Nazwa maszyny")
     ).join(
         machines, machines.c.id_masz == reservations.c.maszyna_id_masz
@@ -44,12 +43,6 @@ def mechanic_dashboard():
         dates, dates.c.id_wpisu == reservations.c.id_wpisu
     )
     results = query.all()
-    # Convert the results to a list of dictionaries
-    data = [dict(row) for row in results]
-
-    session.close()
-
-    return render_template('mechanic_main.html')
 
 @mechanic_bp.route('/registerstats')
 def register_stats():
@@ -60,8 +53,6 @@ class RegistrationForm(FlaskForm):
     ID_stanowiska = StringField('Stanowisko ID', validators=[DataRequired()])
     ID_zlecenia = StringField('Zlecenie ID', validators=[DataRequired()])
     submit = SubmitField('Register')
-
-
 
 
 @mechanic_bp.route('/registerforplace', methods=['GET', 'POST'])
@@ -86,8 +77,10 @@ def registerforplace():
         session.commit()
     session.close()
     return render_template('register_for_place.html', form=form)
+
+
 @mechanic_bp.route('/<table_id>')
-def mechanic_dashboard(table_id=None):
+def mechanic_dashboard2(table_id=None):
     data = None
     if table_id:
         session = get_session()

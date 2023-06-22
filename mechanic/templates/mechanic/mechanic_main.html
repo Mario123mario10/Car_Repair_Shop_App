@@ -106,13 +106,13 @@
     </style>
 </head>
 <body>
-    <a class="back-button" href="{{ url_for('mechanic_bp.mechanic_dashboard') }}">Main Page</a>
+    <a class="back-button" href="{{ url_for('mechanic_bp.mechanic_dashboard2') }}">Main Page</a>
     <h1>Mechanic Features</h1>
     <div class="button-container">
-        <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='zlecenie') }}">Task</a>
-        <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table1') }}">Cars to repair</a>
-        <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table2') }}">Book a machine</a>
-        <a href="{{ url_for('mechanic_bp.mechanic_dashboard', table_id='table3') }}">Parts in magazines</a>
+        <a href="{{ url_for('mechanic_bp.mechanic_dashboard2', table_id='zlecenie') }}">Task</a>
+        <a href="{{ url_for('mechanic_bp.mechanic_dashboard2', table_id='table1') }}">Cars to repair</a>
+        <a href="{{ url_for('mechanic_bp.mechanic_dashboard2', table_id='table2') }}">Book a machine</a>
+        <a href="{{ url_for('mechanic_bp.mechanic_dashboard2', table_id='table3') }}">Parts in magazines</a>
     </div>
     {% if data %}
     <table>
