@@ -24,7 +24,7 @@ def client_dashboard():
     return render_template('client_main.html')
 
 
-@client_bp.route('/makeacomplaint')
+@client_bp.route('/makeacomplaint', methods=['GET', 'POST'])
 def makeacomplaint():
     session = get_session()
     form = ComplaintForm()
@@ -40,7 +40,7 @@ def makeacomplaint():
         rozwiazanie = Rozwiazanie(id_rozw=id_entry, nazwa=expected_solution)
         reklamacja = Reklamacja(id_rekl=id_entry, opis=description, rozwiazanie_id_rozw=id_entry,
                                 zrealnapr_id_napr=id_fix)
-
+        session.add(rozwiazanie)
         session.add(reklamacja)
         session.commit()
     session.close()
