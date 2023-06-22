@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Make a Complaint</title>
+</head>
+<body>
+    <h1>Make a Complaint</h1>
+    <form method="POST" action="{{ url_for('client_bp.makeacomplaint') }}">
+        <label for="ID_fix">ID Fix:</label>
+        <input type="text" id="ID_fix" name="ID_fix" required><br><br>
+
+        <label for="description_fix">Description:</label>
+        <textarea id="description_fix" name="description_fix" required></textarea><br><br>
+
+        <label for="expected_solution">Expected Solution:</label>
+        <textarea id="expected_solution" name="expected_solution" required></textarea><br><br>
+
+        <input type="submit" value="Submit Complaint">
+    </form>
+</body>
+</html>
