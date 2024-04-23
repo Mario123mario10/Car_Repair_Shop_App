@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lista Reklamacji</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('admin_bp.static', filename='css/complaints.css') }}">
+</head>
+<body>
+  <h1>{{ "Lista Reklamacji" }}</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Opis reklamacji</th>
+        <th>Co nalezy zrobic</th>
+        <th>Data naprawy</th>
+        <th>Opis naprawy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr>
+        <td>{{ row['Opis reklamacji'] }}</td>
+        <td>{{ row['Co nalezy zrobic'] }}</td>
+        <td>{{ row['Data naprawy'] }}</td>
+        <td>{{ row['Opis naprawy'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

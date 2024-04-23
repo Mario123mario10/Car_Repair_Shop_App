@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista Zlecen</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('admin_bp.static', filename='css/orders.css') }}">
+</head>
+<body>
+    <h1>{{ "Lista Zlecen" }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Opis przed naprawą</th>
+                <th>Data przyjęcia</th>
+                <th>Szacowany czas naprawy</th>
+                <th>Pojazd</th>
+                <th>Status zlecenia</th>
+                <th>Mechanik</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.opis_przed_naprawa }}</td>
+                <td>{{ order.data_przyjecia }}</td>
+                <td>{{ order.szacowany_czas_naprawy }}</td>
+                <td>{{ order.pojazd }}</td>
+                <td>{{ order.status_zlecenia }}</td>
+                <td>{{ order.mechanik }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('admin_bp.addOrder') }}">Dodaj zlecenie</a>
+</body>
+</html>
